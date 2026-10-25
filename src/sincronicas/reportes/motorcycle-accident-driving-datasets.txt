@@ -1,0 +1,26 @@
+REPORTE DEL DATAFRAME
+============================================================
+Filas: 136
+Columnas: 3
+Duplicados: 0
+
+Columnas y tipos:
+- filename: object
+- case: object
+- duration: float32
+
+Valores nulos por columna:
+- filename: 0
+- case: 0
+- duration: 0
+
+Estadísticas numéricas:
+       duration
+count   136.000
+mean      5.417
+std       1.754
+min       1.470
+25%       4.380
+50%       5.720
+75%       5.783
+max      13.150
