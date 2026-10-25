@@ -1,0 +1,26 @@
+REPORTE DEL DATAFRAME
+============================================================
+Filas: 91
+Columnas: 3
+Duplicados: 0
+
+Columnas y tipos:
+- archivo: object
+- tipo_evento: object
+- duracion_segundos: float32
+
+Valores nulos por columna:
+- archivo: 0
+- tipo_evento: 0
+- duracion_segundos: 0
+
+Estadísticas numéricas:
+       duracion_segundos
+count             91.000
+mean               6.307
+std                1.320
+min                5.010
+25%                5.720
+50%                5.720
+75%                6.440
+max               13.150
