@@ -1,18 +1,20 @@
 REPORTE DEL DATAFRAME
 ============================================================
 Filas: 91
-Columnas: 3
+Columnas: 4
 Duplicados: 0
 
 Columnas y tipos:
 - archivo: object
 - tipo_evento: object
 - duracion_segundos: float32
+- es_video_largo: bool
 
 Valores nulos por columna:
 - archivo: 0
 - tipo_evento: 0
 - duracion_segundos: 0
+- es_video_largo: 0
 
 Estadísticas numéricas:
        duracion_segundos
