@@ -3,7 +3,7 @@ name: Ejecutar actividad de Machine Learning
 
 on:
   push:
-    branches: [main, master,developAE2]
+    branches: [main, master, developAE2]
   workflow_dispatch:
 
 permissions:
@@ -47,7 +47,7 @@ jobs:
 
       - name: Verificar que se generó el reporte
         run: |
-          test -s src/sincronicas/reportes/resumen_resultados.txt
+          test -s src/sincronicas/reportes/africa-synth-climate-deforestation-land-use-change-all.txt
 
       - name: Publicar reporte como artefacto
         uses: actions/upload-artifact@v4
