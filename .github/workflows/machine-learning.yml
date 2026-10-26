@@ -53,16 +53,19 @@ jobs:
           find . -iname "*.ipynb" -not -path "./.venv/*"
           echo "Buscar clases_po:"
           find src -type d -name "clases_po"
-
+          
+         
       - name: Ejecutar notebook
+        working-directory: .
         run: |
           source .venv/bin/activate
-          jupyter nbconvert \
+          python -m jupyter nbconvert \
             --to notebook \
             --execute \
             --inplace \
             --ExecutePreprocessor.timeout=1800 \
             AE2.IPYNB
+
 
       - name: Verificar reporte generado
         run: |
