@@ -53,6 +53,12 @@ jobs:
           find . -iname "*.ipynb" -not -path "./.venv/*"
           echo "Buscar clases_po:"
           find src -type d -name "clases_po"
+
+      - name: Diagnosticar nbconvert
+        run: |
+          .venv/bin/python -m jupyter nbconvert --version
+          .venv/bin/python -m jupyter nbconvert --help
+          ls -la
           
          
       - name: Ejecutar notebook
