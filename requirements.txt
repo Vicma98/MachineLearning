@@ -6,3 +6,5 @@ datasets
 nbconvert
 matplotlib
 scikit-learn
+jupyter
+huggingface_hub

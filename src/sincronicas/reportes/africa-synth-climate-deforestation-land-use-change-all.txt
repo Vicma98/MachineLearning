@@ -1,0 +1,55 @@
+REPORTE DE RESULTADOS 
+=======================================================
+Fecha de generación: 2026-10-26 03:42:53
+
+DATASET UTILIZADO
+-------------------------------------------------------
+Nombre: electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all
+Fuente: https://huggingface.co/datasets/electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all
+Nota: los datos son sintéticos; los resultados no demuestran causalidad ni representan necesariamente condiciones reales.
+
+1. RESULTADOS DEL MODELO DE REGRESIÓN LINEAL
+-------------------------------------------------------
+Variable objetivo: deforestation_rate_ha_year
+MAE: 478266.0801
+RMSE: 802751.6267
+R²: 0.4084
+
+Interpretación de las métricas:
+- MAE y RMSE miden el error de las predicciones; valores menores son preferibles.
+- R² mide el ajuste del modelo; debe interpretarse junto con los errores.
+
+2. RESULTADOS DEL MODELO DE CLASIFICACIÓN
+-------------------------------------------------------
+Modelo: Random Forest mejorado
+Variable objetivo: primary_driver
+Accuracy del modelo de referencia: 0.3500
+Accuracy del Random Forest mejorado: 0.2347
+F1 macro del modelo de referencia: 0.0741
+F1 macro del Random Forest mejorado: 0.1451
+
+Reporte detallado por clase:
+                         precision    recall  f1-score   support
+
+    charcoal_production       0.15      0.16      0.15       461
+ commercial_agriculture       0.23      0.24      0.23       609
+         infrastructure       0.05      0.02      0.03       142
+                logging       0.09      0.08      0.08       298
+                 mining       0.09      0.07      0.08       240
+smallholder_agriculture       0.36      0.41      0.39      1050
+        urban_expansion       0.06      0.04      0.05       200
+
+               accuracy                           0.23      3000
+              macro avg       0.15      0.15      0.15      3000
+           weighted avg       0.22      0.23      0.23      3000
+
+
+3. COMPARACIÓN E INTERPRETACIÓN
+-------------------------------------------------------
+El modelo de referencia obtiene mayor accuracy.
+El Random Forest mejorado obtiene mayor F1 macro.
+
+Los resultados deben interpretarse considerando el carácter sintético
+del dataset y el rendimiento observado en los datos de prueba.
+
+FIN DEL REPORTE

@@ -1,0 +1,57 @@
+
+name: Ejecutar actividad de Machine Learning
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ejecutar-notebook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install \
+            jupyter \
+            nbconvert \
+            ipykernel \
+            pandas \
+            numpy \
+            scikit-learn \
+            matplotlib \
+            datasets \
+            huggingface_hub
+
+      - name: Ejecutar el notebook
+        run: |
+          jupyter nbconvert \
+            --to notebook \
+            --execute AE2.IPYNB \
+            --output AE2_ejecutado.ipynb \
+            --ExecutePreprocessor.timeout=1800
+
+      - name: Verificar que se generó el reporte
+        run: |
+          test -s src/sincronicas/reportes/resumen_resultados.txt
+
+      - name: Publicar reporte como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: africa-synth-climate-deforestation-land-use-change-all
+          path: /workspaces/MachineLearning/src/sincronicas/reportes/africa-synth-climate-deforestation-land-use-change-all.txt
+          if-no-files-found: error
