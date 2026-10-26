@@ -3,7 +3,7 @@ name: Ejecutar actividad de Machine Learning
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master,developAE2]
   workflow_dispatch:
 
 permissions:
