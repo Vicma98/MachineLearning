@@ -3,55 +3,69 @@ name: Ejecutar actividad de Machine Learning
 
 on:
   push:
-    branches: [main, master, developAE2]
+    branches:
+      - developAE2
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ejecutar-machine-learning-developAE2
+  cancel-in-progress: false
 
 jobs:
   ejecutar-notebook:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar el repositorio
+      - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Crear entorno virtual
+        run: python -m venv .venv
 
       - name: Instalar dependencias
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install \
-            jupyter \
-            nbconvert \
-            ipykernel \
-            pandas \
-            numpy \
-            scikit-learn \
-            matplotlib \
-            datasets \
-            huggingface_hub
+          source .venv/bin/activate
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -r requirements.txt
+          .venv/bin/python -m pip install pyarrow openpyxl
 
-      - name: Ejecutar el notebook
+      - name: Comprobar archivos necesarios
         run: |
+          test -f AE2.IPYNB
+          test -d src/clases_po
+          mkdir -p src/sincronicas/reportes
+
+      - name: Ejecutar notebook
+        run: |
+          source .venv/bin/activate
           jupyter nbconvert \
             --to notebook \
-            --execute AE2.IPYNB \
-            --output AE2_ejecutado.ipynb \
-            --ExecutePreprocessor.timeout=1800
+            --execute \
+            --inplace \
+            --ExecutePreprocessor.timeout=1800 \
+            AE2.IPYNB
 
-      - name: Verificar que se generó el reporte
+      - name: Verificar reporte generado
         run: |
           test -s src/sincronicas/reportes/africa-synth-climate-deforestation-land-use-change-all.txt
 
       - name: Publicar reporte como artefacto
         uses: actions/upload-artifact@v4
         with:
-          name: africa-synth-climate-deforestation-land-use-change-all
-          path: /workspaces/MachineLearning/src/sincronicas/reportes/africa-synth-climate-deforestation-land-use-change-all.txt
+          name: resumen-resultados-machine-learning
+          path: src/sincronicas/reportes/africa-synth-climate-deforestation-land-use-change-all.txt
           if-no-files-found: error
+
+
