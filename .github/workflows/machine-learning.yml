@@ -36,52 +36,51 @@ jobs:
 
       - name: Instalar dependencias
         run: |
-          source .venv/bin/activate
           .venv/bin/python -m pip install --upgrade pip
           .venv/bin/python -m pip install -r requirements.txt
           .venv/bin/python -m pip install pyarrow openpyxl
 
-      - name: Comprobar archivos necesarios
+      - name: Localizar notebook
         run: |
-          echo "Directorio actual:"
+          echo "Directorio del repositorio:"
           pwd
-          echo "Archivos de la raíz:"
-          ls -la
-          echo "Archivos dentro de src:"
-          ls -la src || true
-          echo "Buscar el notebook:"
-          find . -iname "*.ipynb" -not -path "./.venv/*"
-          echo "Buscar clases_po:"
-          find src -type d -name "clases_po"
+          echo "Notebooks encontrados:"
+          find . -type f -iname "*.ipynb" -not -path "./.venv/*"
 
-      - name: Diagnosticar nbconvert
-        run: |
-          .venv/bin/python -m jupyter nbconvert --version
-          .venv/bin/python -m jupyter nbconvert --help
-          ls -la
-          
-         
+          NOTEBOOK="$(find . -type f -iname 'AE2.IPYNB' \
+            -not -path './.venv/*' -print -quit)"
+
+          if [ -z "$NOTEBOOK" ]; then
+            echo "ERROR: No se encontró AE2.IPYNB."
+            exit 1
+          fi
+
+          echo "Notebook seleccionado: $NOTEBOOK"
+          echo "NOTEBOOK=$NOTEBOOK" >> "$GITHUB_ENV"
+
       - name: Ejecutar notebook
-        working-directory: .
         run: |
-          source .venv/bin/activate
-          python -m jupyter nbconvert \
-            --to notebook \
-            --execute \
-            --inplace \
-            --ExecutePreprocessor.timeout=1800 \
-            AE2.IPYNB
-
+          .venv/bin/jupyter nbconvert --version
+          .venv/bin/jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 "$NOTEBOOK"
 
       - name: Verificar reporte generado
         run: |
-          test -s src/sincronicas/reportes/africa-synth-climate-deforestation-land-use-change-all.txt
+          if ! find src/sincronicas/reportes \
+            -maxdepth 1 -type f -name "*.txt" -size +0c \
+            -print -quit | grep -q .; then
+            echo "ERROR: No se generó ningún reporte TXT con contenido."
+            echo "Archivos encontrados:"
+            find src/sincronicas/reportes -maxdepth 1 -type f
+            exit 1
+          fi
+
+          echo "Reporte TXT generado:"
+          find src/sincronicas/reportes \
+            -maxdepth 1 -type f -name "*.txt" -size +0c -print
 
       - name: Publicar reporte como artefacto
         uses: actions/upload-artifact@v4
         with:
           name: resumen-resultados-machine-learning
-          path: src/sincronicas/reportes/africa-synth-climate-deforestation-land-use-change-all.txt
+          path: src/sincronicas/reportes/*.txt
           if-no-files-found: error
-
-
