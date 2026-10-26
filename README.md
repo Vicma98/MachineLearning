@@ -12,4 +12,8 @@ jupyter lab
 
 # autenticar Hugging Face
 hf auth login
+
 hf auth whoami
+
+# Abrir el jupyter
+jupyter notebook
