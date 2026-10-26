@@ -43,9 +43,16 @@ jobs:
 
       - name: Comprobar archivos necesarios
         run: |
-          test -f AE2.IPYNB
-          test -d src/clases_po
-          mkdir -p src/sincronicas/reportes
+          echo "Directorio actual:"
+          pwd
+          echo "Archivos de la raíz:"
+          ls -la
+          echo "Archivos dentro de src:"
+          ls -la src || true
+          echo "Buscar el notebook:"
+          find . -iname "*.ipynb" -not -path "./.venv/*"
+          echo "Buscar clases_po:"
+          find src -type d -name "clases_po"
 
       - name: Ejecutar notebook
         run: |
