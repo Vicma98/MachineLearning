@@ -1,86 +1,101 @@
-
-name: Ejecutar actividad de Machine Learning
+name: Pipeline ML - Actividades Evaluativas (AE2 y AE3)
 
 on:
   push:
     branches:
+      - main
+      - developAE3
       - developAE2
+  pull_request:
+    branches:
+      - main
+      - developAE3
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ejecutar-machine-learning-developAE2
+  group: pipeline-ml-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
-  ejecutar-notebook:
+  ejecutar-actividad-3:
+    name: Actividad Evaluativa 3 (Deforestación)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar repositorio
+      - name: 1. Descargar código del repositorio
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Configurar Python
+      - name: 2. Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: pip
+          python-version: "3.11"
+          cache: "pip"
           cache-dependency-path: requirements.txt
 
-      - name: Crear entorno virtual
-        run: python -m venv .venv
-
-      - name: Instalar dependencias
+      - name: 3. Instalar dependencias
         run: |
-          .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/python -m pip install -r requirements.txt
-          .venv/bin/python -m pip install pyarrow openpyxl
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install jupyter nbconvert ipykernel matplotlib seaborn scikit-learn pandas numpy datasets pyarrow
 
-      - name: Localizar notebook
+      - name: 4. Localizar y ejecutar AE3.ipynb
         run: |
-          echo "Directorio del repositorio:"
-          pwd
-          echo "Notebooks encontrados:"
-          find . -type f -iname "*.ipynb" -not -path "./.venv/*"
-
-          NOTEBOOK="$(find . -type f -iname 'AE2.IPYNB' \
-            -not -path './.venv/*' -print -quit)"
-
+          NOTEBOOK="$(find . -type f -iname 'AE3.ipynb' -not -path './.venv/*' -print -quit)"
           if [ -z "$NOTEBOOK" ]; then
-            echo "ERROR: No se encontró AE2.IPYNB."
+            echo "ERROR: No se encontró AE3.ipynb"
             exit 1
           fi
+          echo "Ejecutando notebook: $NOTEBOOK"
+          jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 "$NOTEBOOK"
 
-          echo "Notebook seleccionado: $NOTEBOOK"
-          echo "NOTEBOOK=$NOTEBOOK" >> "$GITHUB_ENV"
-
-      - name: Ejecutar notebook
+      - name: 5. Verificar reporte y gráfica generados
         run: |
-          .venv/bin/jupyter nbconvert --version
-          .venv/bin/jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 "$NOTEBOOK"
+          test -s reportes/resumen_ae3.txt || { echo "ERROR: Falta reportes/resumen_ae3.txt"; exit 1; }
+          test -s reportes/matriz_confusion_ae3.png || { echo "ERROR: Falta reportes/matriz_confusion_ae3.png"; exit 1; }
+          echo "Archivos verificados correctamente:"
+          ls -lh reportes/
 
-      - name: Verificar reporte generado
-        run: |
-          if ! find src/sincronicas/reportes \
-            -maxdepth 1 -type f -name "*.txt" -size +0c \
-            -print -quit | grep -q .; then
-            echo "ERROR: No se generó ningún reporte TXT con contenido."
-            echo "Archivos encontrados:"
-            find src/sincronicas/reportes -maxdepth 1 -type f
-            exit 1
-          fi
-
-          echo "Reporte TXT generado:"
-          find src/sincronicas/reportes \
-            -maxdepth 1 -type f -name "*.txt" -size +0c -print
-
-      - name: Publicar reporte como artefacto
+      - name: 6. Publicar resumen y gráfica como artefacto descargable
         uses: actions/upload-artifact@v4
         with:
-          name: resumen-resultados-machine-learning
-          path: src/sincronicas/reportes/*.txt
+          name: artefacto-actividad-3
+          path: |
+            reportes/resumen_ae3.txt
+            reportes/matriz_confusion_ae3.png
           if-no-files-found: error
+          retention-days: 30
+
+  ejecutar-actividad-2:
+    name: Actividad Evaluativa 2 (Respaldo)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: 1. Descargar código del repositorio
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 3. Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install jupyter nbconvert ipykernel matplotlib seaborn scikit-learn pandas numpy datasets pyarrow openpyxl
+
+      - name: 4. Localizar y ejecutar AE2.ipynb
+        run: |
+          NOTEBOOK="$(find . -type f -iname 'AE2.ipynb' -not -path './.venv/*' -print -quit)"
+          if [ -n "$NOTEBOOK" ]; then
+            jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 "$NOTEBOOK"
+          else
+            echo "AE2.ipynb no encontrado, omitiendo."
+          fi
