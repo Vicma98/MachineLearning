@@ -1,7 +1,7 @@
 ======================================================================
 RESUMEN AUTOMÁTICO DE EJECUCIÓN - ACTIVIDAD EVALUATIVA 3
 ======================================================================
-Fecha y hora de ejecución : 2026-11-19 13:01:13
+Fecha y hora de ejecución : 2026-11-19 16:46:44
 Dataset Hugging Face      : electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all
 Split utilizado           : train
 
