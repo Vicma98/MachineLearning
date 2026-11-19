@@ -1,0 +1,37 @@
+======================================================================
+RESUMEN AUTOMÁTICO DE EJECUCIÓN - ACTIVIDAD EVALUATIVA 3
+======================================================================
+Fecha y hora de ejecución : 2026-11-19 13:01:13
+Dataset Hugging Face      : electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all
+Split utilizado           : train
+
+1. PREGUNTA DE NEGOCIO
+----------------------------------------------------------------------
+¿Cuáles parcelas de bosque tienen un alto riesgo de sufrir deforestación
+severa según su clima y el uso del suelo, para que los guardabosques
+prioricen patrullajes y ayudas de conservación antes de la tala?
+
+2. PREPROCESAMIENTO APLICADO
+----------------------------------------------------------------------
+- Dimensiones iniciales : 15000 filas x 18 columnas
+- Limpieza              : Eliminación de duplicados e imputación de nulos (mediana/moda)
+- Variable objetivo     : riesgo_alto_deforestacion (binaria: 0 = Bajo riesgo, 1 = Alto riesgo)
+- Codificación          : One-Hot Encoding (pd.get_dummies) para variables categóricas
+- Escalado              : No aplicado (Random Forest es invariante a la escala)
+- Partición             : 80% Entrenamiento (12000 filas) / 20% Prueba (3000 filas)
+
+3. MODELO Y CONFIGURACIÓN
+----------------------------------------------------------------------
+- Tipo de aprendizaje   : Supervisado (Clasificación Binaria)
+- Algoritmo             : Random Forest Classifier
+- Hiperparámetros       : {'n_estimators': 100, 'max_depth': 8, 'random_state': 42}
+- Cantidad de variables : 6039 variables predictoras
+
+4. MÉTRICAS DE EVALUACIÓN (CONJUNTO DE PRUEBA)
+----------------------------------------------------------------------
+- Exactitud (Accuracy)  : 0.941
+- Precisión (Precision) : 0.9232
+- Sensibilidad (Recall) : 0.962
+- F1-Score              : 0.9422
+- Matriz de Confusión   : [[1380, 120], [57, 1443]]
+======================================================================
