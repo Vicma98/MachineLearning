@@ -1,0 +1,14 @@
+REPORTE DE RESULTADOS /n=======================================================/nFecha de generación: 2026-11-20 14:59:02/n/nDATASET UTILIZADO/n-------------------------------------------------------/nNombre: electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all/nFuente: https://huggingface.co/datasets/electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all/nNota: los datos son sintéticos; los resultados no demuestran causalidad ni representan necesariamente condiciones reales./n/n1. RESULTADOS DEL MODELO DE REGRESIÓN LINEAL/n------------------------------------------------------------/nVariable objetivo: deforestation_rate_ha_year (unidades: ha/año)/nMAE  : 478266.0801 ha/año/nRMSE : 802751.6267 ha/año/nR²   : 0.4084/n/nInterpretación de las métricas de regresión:/n- MAE: error absoluto medio en hectáreas/año; valores menores indican menor error promedio./n- RMSE: raíz del error cuadrático medio en hectáreas/año; castiga más los errores grandes./n- R²: proporción de varianza explicada por el modelo (1.0 es ajuste perfecto; 0.0 equivale a predecir la media)./n/n2. RESULTADOS DEL MODELO DE CLASIFICACIÓN/n------------------------------------------------------------/nModelos comparados: Modelo de referencia vs. Random Forest mejorado/nVariable objetivo: primary_driver/nAccuracy (referencia)           : 0.3500/nAccuracy (Random Forest mejorado): 0.3353 (Diferencia: -0.0147)/nF1 macro (referencia)           : 0.0741/nF1 macro (Random Forest mejorado): 0.0938 (Diferencia: +0.0197)/n/nReporte detallado por clase:/n                         precision    recall  f1-score   support
+
+    charcoal_production       0.11      0.01      0.02       461
+ commercial_agriculture       0.22      0.08      0.11       609
+         infrastructure       0.00      0.00      0.00       142
+                logging       0.12      0.01      0.01       298
+                 mining       0.00      0.00      0.00       240
+smallholder_agriculture       0.35      0.91      0.51      1050
+        urban_expansion       0.00      0.00      0.00       200
+
+               accuracy                           0.34      3000
+              macro avg       0.12      0.14      0.09      3000
+           weighted avg       0.20      0.34      0.21      3000
+/n/n3. COMPARACIÓN E INTERPRETACIÓN/n------------------------------------------------------------/n- Comparación en Accuracy:/n  * El modelo de referencia supera al Random Forest mejorado por 0.0147./n- Comparación en F1 macro:/n  * El Random Forest mejorado supera al modelo de referencia por 0.0197./n- Nota sobre F1 macro: evalúa el desempeño equilibrado entre todas las clases de primary_driver/n  sin dejarse dominar solo por la clase más frecuente./n- Consideración final: los hallazgos dependen del carácter sintético del dataset/n  y del desempeño medido sobre el conjunto de prueba./n/n============================================================/nFIN DEL REPORTE

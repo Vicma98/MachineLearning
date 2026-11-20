@@ -107,7 +107,7 @@ jobs:
           REPORTE_AE2="$(find . -path './.venv' -prune -o -type f -name '*africa*summary*.txt' -size +0c -print -quit)"
           if [ -z "$REPORTE_AE2" ]; then
             echo "Buscando cualquier reporte TXT generado en src/sincronicas/reportes o reportes/..."
-            REPORTE_AE2="$(find src/sincronicas/reportes reportes -maxdepth 2 -type f -name '*.txt' ! -name 'resumen_ae3.txt' -size +0c -print -quit 2>/dev/null)"
+            REPORTE_AE2="$(find src/sincronicas/reportes reportes -maxdepth 2 -type f -name 'reporte AE2.txt' -size +0c -print -quit 2>/dev/null)"
           fi
 
           if [ -z "$REPORTE_AE2" ]; then
@@ -122,6 +122,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: artefacto-actividad-2
-          path: ${{ env.REPORTE_AE2 }}
+          path: |
+            reportes/reporte AE2.txt
           if-no-files-found: error
           retention-days: 30
