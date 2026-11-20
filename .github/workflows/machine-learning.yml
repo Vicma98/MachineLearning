@@ -71,19 +71,21 @@ jobs:
           retention-days: 30
 
   ejecutar-actividad-2:
-    name: Actividad Evaluativa 2 (Respaldo)
+    name: Actividad Evaluativa 2 (Regresión Lineal)
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
       - name: 1. Descargar código del repositorio
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 2. Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
+          cache-dependency-path: requirements.txt
 
       - name: 3. Instalar dependencias
         run: |
@@ -94,8 +96,32 @@ jobs:
       - name: 4. Localizar y ejecutar AE2.ipynb
         run: |
           NOTEBOOK="$(find . -type f -iname 'AE2.ipynb' -not -path './.venv/*' -print -quit)"
-          if [ -n "$NOTEBOOK" ]; then
-            jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 "$NOTEBOOK"
-          else
-            echo "AE2.ipynb no encontrado, omitiendo."
+          if [ -z "$NOTEBOOK" ]; then
+            echo "ERROR: No se encontró AE2.ipynb"
+            exit 1
           fi
+          echo "Ejecutando notebook: $NOTEBOOK"
+          jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 "$NOTEBOOK"
+      - name: 5. Verificar reporte TXT de la Actividad 2
+        run: |
+          REPORTE_AE2="$(find . -path './.venv' -prune -o -type f -name '*africa*summary*.txt' -size +0c -print -quit)"
+          if [ -z "$REPORTE_AE2" ]; then
+            echo "Buscando cualquier reporte TXT generado en src/sincronicas/reportes o reportes/..."
+            REPORTE_AE2="$(find src/sincronicas/reportes reportes -maxdepth 2 -type f -name '*.txt' ! -name 'resumen_ae3.txt' -size +0c -print -quit 2>/dev/null)"
+          fi
+
+          if [ -z "$REPORTE_AE2" ]; then
+            echo "ERROR: No se encontró el reporte TXT con contenido de la Actividad 2."
+            exit 1
+          fi
+
+          echo "Reporte AE2 verificado: $REPORTE_AE2"
+          echo "REPORTE_AE2=$REPORTE_AE2" >> "$GITHUB_ENV"
+
+      - name: 6. Publicar reporte de Actividad 2 como artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: artefacto-actividad-2
+          path: ${{ env.REPORTE_AE2 }}
+          if-no-files-found: error
+          retention-days: 30
