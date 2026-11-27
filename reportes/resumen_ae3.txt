@@ -1,6 +1,6 @@
 RESUMEN AUTOMÁTICO - ACTIVIDAD EVALUATIVA 3
 ============================================================
-Fecha: 2026-11-20 15:03:53.130915
+Fecha: 2026-11-26 13:31:57.324077
 Dataset Hugging Face      : electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all
 Split utilizado           : train
 
@@ -33,5 +33,30 @@ prioricen patrullajes y ayudas de conservación antes de la tala?
 - Sensibilidad (Recall) : 0.962
 - F1-Score              : 0.9422
 - Matriz de Confusión   : [[1380, 120], [57, 1443]]
+
+5. RESUMEN ORIENTATIVO POR PAÍS (CONJUNTO DE PRUEBA)
+----------------------------------------------------------------------
+Nota: 'country' indica el país del registro en el dataset (nivel macro),
+no el nombre exacto de una vereda o coordenada GPS; además los datos son
+sintéticos, por lo que sirve como guía orientativa y no como orden de
+campo sin validación local.
+
+              total_registros  casos_alto_riesgo tasa_alto_riesgo
+country                                                          
+DRC                       213                213           100.0%
+Tanzania                  217                217           100.0%
+Zambia                    193                193           100.0%
+Mozambique                230                229           99.57%
+Nigeria                   207                179           86.47%
+Ethiopia                  192                166           86.46%
+Senegal                   170                122           71.76%
+Mali                      222                120           54.05%
+South Africa              196                 75           38.27%
+Ghana                     185                 38           20.54%
+Malawi                    197                 11            5.58%
+Kenya                     211                  0             0.0%
+Niger                     203                  0             0.0%
+Rwanda                    179                  0             0.0%
+Uganda                    185                  0             0.0%
 ======================================================================
 

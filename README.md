@@ -17,28 +17,65 @@ hf auth whoami
 # Abrir el jupyter
 jupyter notebook
 
-## Documento de Hallazgos — Actividad Evaluativa 3
+
+
+## Documentacion de Hallazgos — Actividad Evaluativa 3
+### VICTOR MANUEL HERNANDEZ FERNANDEZ 
+### Monitoreo y Predicción de Deforestación con Machine Learning
+
+**Institución Universitaria Digital de Antioquia (IU Digital)**
+**Repositorio:** [https://github.com/Vicma98/MachineLearning/tree/developAE3]
 
 ### 1. Respuesta a la Pregunta de Negocio
-**Pregunta:** ¿Cuáles parcelas de bosque tienen un alto riesgo de sufrir deforestación severa según su clima y el uso del suelo, para que los guardabosques prioricen patrullajes y ayudas de conservación antes de la tala?
+**Pregunta:** 
+> **¿Cuáles parcelas de bosque presentan un alto riesgo de sufrir deforestación severa a partir de sus condiciones climáticas y el uso del suelo, para que los guardabosques prioricen patrullajes e incentivos de conservación antes de que ocurra la tala?**
+
+* **¿Quién necesita la respuesta?** La dirección de guardabosques, entidades de planificación territorial y autoridades ambientales encargadas de la protección forestal.
+* **¿Qué decisión apoya?** Priorizar rutas de vigilancia preventiva en cuadrantes de alto riesgo y focalizar apoyos o incentivos de conservación donde los recursos operativos son limitados.
+
+---
 
 **Respuesta del modelo:** Con un **Random Forest Classifier** (`n_estimators=100`, `max_depth=8`, `random_state=42`) evaluado sobre **3,000 registros de prueba** (`12,000` de entrenamiento), el modelo logra detectar correctamente el **96.2%** de las parcelas con alto riesgo de deforestación (`Recall = 0.962`) y alcanza una exactitud global del **94.1%** (`Accuracy = 0.941`, `F1-Score = 0.9422`). Esto permite enfocar las brigadas de guardabosques y los recursos de conservación en las zonas más críticas sin desperdiciar recorridos en áreas de bajo riesgo.
 
-### 2. Hallazgos Principales y Evidencia
-* **Alta capacidad de detección temprana (`Recall = 0.962`):** De **1,500 casos reales de alto riesgo** en la muestra de prueba, el modelo identificó **1,443** (Verdaderos Positivos) y omitió solo **57** (Falsos Negativos). En conservación ambiental, minimizar los falsos negativos es clave para evitar pérdidas irreversibles de cobertura forestal.
-* **Control de falsas alarmas (`Precision = 0.9232`):** De las parcelas clasificadas como de bajo riesgo, **1,380** fueron clasificadas correctamente (Verdaderos Negativos) frente a **120** Falsos Positivos, manteniendo un costo operativo manejable al verificar zonas en campo.
-* **Impacto de variables y codificación:** Tras limpiar duplicados e imputar nulos (mediana para numéricos y moda para categóricos), la codificación *One-Hot* generó **6,039 variables predictoras** a partir de las **18 columnas iniciales**, capturando patrones entre condiciones climáticas, uso del suelo y riesgo de deforestación.
+### 2. Dataset Utilizado
+* **Identificador en Hugging Face:** `electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all`
+* **Enlace:** [https://huggingface.co/datasets/electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all]
+* **Split utilizado:** `train` (15,000 registros y 18 columnas iniciales).
+* **Por qué permite responder la pregunta:** Reúne variables climáticas, de uso del suelo e indicadores asociados a la deforestación, permitiendo entrenar un modelo supervisado para estimar si una parcela cae en un escenario de alto riesgo (`riesgo_alto_deforestacion`: `0 = Bajo riesgo`, `1 = Alto riesgo`) sin incluir la columna original de pérdida forestal entre las predictoras.
 
-### 3. Confiabilidad y Limitaciones
-* **Confiabilidad:** Los datos se dividieron **80% entrenamiento / 20% prueba** de forma estratificada, evitando fuga de datos (*data leakage*) al no incluir la variable original usada para definir el umbral objetivo[cite: 5]. Además, al basarse en árboles de decisión, no requiere escalado de variables[cite: 4].
+### 3. Modelo Seleccionado y Funcionamiento Paso a Paso
+En la **Actividad Evaluativa 3** se utilizó un enfoque de **Aprendizaje Supervisado (Clasificación Binaria)** mediante el algoritmo **Random Forest Classifier** (`n_estimators=100`, `max_depth=8`, `random_state=42`).
+
+#### ¿Cómo funciona el algoritmo paso a paso?
+1. **Muestras *bootstrap* (bagging):** A partir del conjunto de entrenamiento (12,000 registros), se generan múltiples submuestras aleatorias con reemplazo para construir distintos árboles de decisión.
+2. **Selección aleatoria de variables en cada nodo:** Al buscar la mejor división en cada nodo de un árbol, se evalúa un subconjunto aleatorio de características en lugar de todas a la vez, reduciendo la correlación entre árboles.
+3. **División por impureza:** Cada árbol divide los datos según la variable y el umbral que mejor separan las clases (`0` y `1`), repitiendo el proceso hasta alcanzar criterios de parada como `max_depth=8`.
+4. **Votación mayoritaria:** Para predecir sobre una nueva parcela (en los 3,000 registros de prueba), cada árbol emite su voto de clase y gana la categoría con mayor votación.
+
+* **Justificación sobre escalado:** Los modelos basados en árboles de decisión realizan cortes por umbrales en cada variable y no dependen de distancias geométricas entre puntos, por lo que no requieren escalado de variables.
+
+
+### 4. Hallazgos Principales y Evidencia
+#### Respuesta a la Pregunta de Negocio
+Evaluado sobre **3,000 registros de prueba** (tras entrenar con **12,000** y codificar variables categóricas con *One-Hot Encoding* a **6,039** columnas predictoras), el **Random Forest Classifier** alcanza una **Exactitud (`Accuracy`) de `0.941`**, una **Sensibilidad (`Recall`) de `0.962`**, una **Precisión de `0.9232`** y un **F1-Score de `0.9422`**, con matriz de confusión `[[1380, 120], [57, 1443]]`. En términos prácticos, el modelo detecta el **96.2%** de las parcelas críticas en prueba, permitiendo enfocar patrullajes y acciones preventivas en las zonas con mayor probabilidad de deforestación.
+
+#### Hallazgos Principales
+* **Alta cobertura de casos críticos (`Recall = 0.962`):** De 1,500 casos de alto riesgo en prueba, se identificaron **1,443** verdaderos positivos y solo **57** falsos negativos, reduciendo el riesgo de pasar por alto zonas vulnerables.
+* **Control de falsas alarmas (`Precision = 0.9232`):** Se registraron **1,380** verdaderos negativos y **120** falsos positivos, manteniendo un balance sólido entre alertas útiles y carga operativa en campo.
+* **Alta dimensionalidad tras codificación:** Pasar de 18 columnas iniciales a 6,039 variables predictoras tras *One-Hot Encoding* permite capturar patrones detallados, pero incrementa el costo computacional.
+
+#### Confiabilidad y Limitaciones
+* **Confiabilidad:** La separación estratificada 80/20 (`train_test_split`) y la exclusión de la variable base usada para construir la etiqueta evitan fuga de información hacia el conjunto de prueba.
 * **Limitaciones:**
-  1. El dataset (`electricsheepafrica/africa-synth-climate-deforestation-land-use-change-all`) tiene componentes sintéticos, por lo que antes de operar en un territorio real debe calibrarse con datos locales recientes.
-  2. La codificación *One-Hot* sobre columnas categóricas eleva la dimensionalidad a **6,039 columnas**, lo que aumenta el consumo de memoria y tiempo de cómputo si el dataset crece mucho.
-  3. Persisten **57 falsos negativos** y **120 falsos positivos**, por lo que el modelo debe funcionar como apoyo a la decisión humana y no como reemplazo total de la inspección técnica.
+  * El conjunto de datos tiene carácter sintético, por lo que sus resultados no implican causalidad directa ni sustituyen la validación territorial con datos locales actualizados.
+  * La alta cantidad de columnas generadas por codificación puede volver más lento el entrenamiento si el volumen de datos crece.
+  * Persisten errores residuales (57 falsos negativos y 120 falsos positivos), por lo que el modelo debe apoyar —no reemplazar— la supervisión humana.
 
-### 4. Recomendaciones Accionables
-1. **Priorizar patrullajes preventivos:** Asignar primero las rutas de vigilancia y monitoreo a las parcelas marcadas como `riesgo_alto_deforestacion = 1`, concentrando los esfuerzos donde el modelo detecta el **96.2%** de los casos críticos.
-2. **Focalizar incentivos y asistencia técnica:** Dirigir programas de apoyo agrícola sostenible o pagos por conservación a las zonas de riesgo alto antes de épocas críticas de clima seco o expansión del uso del suelo.
-3. **Ajustar el umbral de alerta y depurar variables:** Evaluar el umbral de probabilidad (`predict_proba`)[cite: 6] según el presupuesto disponible de patrullas y revisar si conviene reducir o seleccionar variables para disminuir las **6,039 columnas** generadas por *One-Hot Encoding*.
+#### Recomendaciones
+1. **Priorizar patrullajes preventivos** en las parcelas predichas como de alto riesgo (`1`) antes de periodos secos o de mayor presión sobre el suelo.
+2. **Focalizar programas de conservación e incentivos** en zonas de riesgo alto identificadas por el modelo como lo son programas de apoyo agrícola sostenible o pagos por conservación a las zonas de riesgo alto antes de épocas críticas de clima seco o expansión del uso del suelo
+3. **Evaluar reducción de dimensionalidad o selección de variables** y calibrar el umbral de alerta según la capacidad real de las brigadas.
+
+---
 
 
